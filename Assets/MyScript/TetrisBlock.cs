@@ -41,7 +41,11 @@ public class TetrisBlock : MonoBehaviour
         {
             transform.position += new Vector3(0, -1, 0);
             if (!ValidMove())
+            {
                 transform.position -= new Vector3(0, -1, 0);
+                this.enabled = false;
+                FindObjectOfType<SpawnCell>().NewCell();
+            }  
             previousTime = Time.time;
         }
     }
