@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,11 +11,6 @@ public class TetrisBlock : MonoBehaviour
     public static int height = 20;
     public static int width = 10;
     private static Transform[,] grid = new Transform[width, height];
-
-    void Start()
-    {
-        
-    }
 
     void Update()
     {
@@ -45,10 +41,59 @@ public class TetrisBlock : MonoBehaviour
             {
                 transform.position -= new Vector3(0, -1, 0);
                 AddToGrid();
+                CheckForLines();
+
                 this.enabled = false;
                 FindObjectOfType<SpawnCell>().NewCell();
             }  
             previousTime = Time.time;
+        }
+    }
+
+    void CheckForLines()
+    {
+        for (int i = height -1; i >= 0; i--)
+        {
+            if (HasLine(i))
+            {
+                DeleteLine(i);
+                RowDown(i);
+            }
+        }
+    }
+
+    bool HasLine(int i)
+    {
+        for(int j = 0; j < width; j++)
+        {
+            if (grid[j, i] == null)
+                return false;
+        }
+        return true;
+    }
+
+    void DeleteLine(int i)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            Destroy(grid[j, i].gameObject);
+            grid[j, i] = null;
+        }
+    }
+
+    void RowDown(int i)
+    {
+        for (int y = i; y < height; y++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                if (grid[j, y] != null)
+                {
+                    grid[j, y - 1] = grid[j, y];
+                    grid[j, y] = null;
+                    grid[j, y - 1].transform.position -= new Vector3(0, 1, 0);
+                }
+            }
         }
     }
 
